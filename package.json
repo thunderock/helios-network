@@ -1,0 +1,29 @@
+{
+  "name": "helios-web",
+  "description": "Helios network representation written using wasm",
+  "version": "0.0.1",
+  "main": "Test/index.html",
+  "scripts": {
+    "dev": "vite",
+    "build:wasm": "make",
+    "build": "vite build"
+  },
+  "keywords": [
+    "wasm",
+    "webassembly",
+    "sudoku",
+    "c",
+    "ansic",
+    "vue",
+    "vue3",
+    "vuejs",
+    "vite"
+  ],
+  "author": "Filipi Nascimento Silva <dev@arturrosa.pl> (arturrosa.pl)",
+  "license": "MIT",
+  "dependencies": {
+  },
+  "devDependencies": {
+    "vite": "^4.1.4"
+  }
+}
