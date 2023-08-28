@@ -1,10 +1,7 @@
 main:	clean
 	mkdir Compiled
-	em++ -Wl\
-	--whole-archive Source/CVNetwork.cpp \
-	-o Compiled/test.mjs \
+	em++ -Wl,--whole-archive Source/CVNetwork.cpp -o Compiled/test.mjs \
 		-O3 \
-		--std=c++17 \
 		-Wall \
 		-s EXPORT_ES6=1 \
 		-s MODULARIZE=1 \
