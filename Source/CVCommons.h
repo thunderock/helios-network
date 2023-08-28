@@ -1,3 +1,9 @@
+/**
+ * @Author: Ashutosh Tiwari
+ * @Date:   2023-08-28 12:17:13
+ * @Last Modified by:   Ashutosh Tiwari
+ * @Last Modified time: 2023-08-28 12:44:00
+ */
 //
 //  CVCommons.h
 //  CVNetwork
@@ -345,14 +351,14 @@ CV_INLINE CVString CVNewStringReadingLine(FILE *f){
 	char* ln;
 	
 	ln = NULL; /* default */
-	if (NULL == (buffer = malloc(_kCVStringReadlineINITSIZE))) return NULL;
+	if (NULL == (buffer = (char *) malloc(_kCVStringReadlineINITSIZE))) return NULL;
 	cursize = _kCVStringReadlineINITSIZE;
 	
 	ix = 0;
 	while ((EOF != (ch = getc(f))) && ('\n' != ch)) {
 		if (ix >= (cursize - 1)) { /* extend buffer */
 			cursize += _kCVStringReadlineDELTASIZE;
-			if (NULL == (temp = realloc(buffer, (size_t)cursize))) {
+			if (NULL == (temp = (char * )realloc(buffer, (size_t)cursize))) {
 				/* ran out of memory, return partial line */
 				buffer[ix] = '\0';
 				ln = buffer;
@@ -368,7 +374,7 @@ CV_INLINE CVString CVNewStringReadingLine(FILE *f){
 	}
 	
 	buffer[ix] = '\0';
-	if (NULL == (temp = realloc(buffer, (size_t)ix + 1))) {
+	if (NULL == (temp = (char *)realloc(buffer, (size_t)ix + 1))) {
 		ln = buffer;  /* without reducing it */
 	}
 	else ln = temp;
@@ -376,7 +382,7 @@ CV_INLINE CVString CVNewStringReadingLine(FILE *f){
 }
 
 
-CV_INLINE CVSize CVStringScan(CVString* restrict scannedString, const CVString restrict scanString){
+CV_INLINE CVSize CVStringScan(CVString* scannedString, const CVString scanString){
 	CVSize scanStringLength = strlen(scanString);
 	if(strncmp(*scannedString,scanString,scanStringLength)==0){
 		(*scannedString)+= scanStringLength;
@@ -386,7 +392,7 @@ CV_INLINE CVSize CVStringScan(CVString* restrict scannedString, const CVString r
 	}
 }
 
-CV_INLINE CVSize CVStringScanCharacters(CVString* restrict scannedString, CVChar scanCharacter){
+CV_INLINE CVSize CVStringScanCharacters(CVString* scannedString, CVChar scanCharacter){
 	CVString scannedStringTemp = *scannedString;
 	CVSize scannedCount = 0;
 	while (scannedStringTemp[0]==scanCharacter) {
@@ -397,7 +403,7 @@ CV_INLINE CVSize CVStringScanCharacters(CVString* restrict scannedString, CVChar
 	return scannedCount;
 }
 
-CV_INLINE CVString CVNewStringScanningUpToCharacter(CVString* restrict scannedString, CVChar stopCharacter){
+CV_INLINE CVString CVNewStringScanningUpToCharacter(CVString* scannedString, CVChar stopCharacter){
 	CVString scannedStringTemp = *scannedString;
 	CVSize scannedCount = 0;
 	CVSize capacity = 1;
@@ -418,7 +424,7 @@ CV_INLINE CVString CVNewStringScanningUpToCharacter(CVString* restrict scannedSt
 
 
 CV_INLINE CVString CVNewStringFromString(const CVString theString){
-	CVString newString = malloc(sizeof(char) * (strlen(theString)+1));
+	CVString newString = (char *) malloc(sizeof(char) * (strlen(theString)+1));
 	strcpy(newString,theString);
 	return newString;
 }
@@ -437,7 +443,7 @@ static CVString CVNewStringFromFormat(const CVString format, ...){
 	return returnedString;
 }
 
-CV_INLINE CVString CVNewStringScanningUpToCharactersInList(CVString* restrict scannedString, const CVString restrict stopCharacters){
+CV_INLINE CVString CVNewStringScanningUpToCharactersInList(CVString* scannedString, const CVString stopCharacters){
 	CVString scannedStringTemp = *scannedString;
 	CVSize scannedCount = 0;
 	CVSize capacity = 1;
@@ -470,7 +476,7 @@ CV_INLINE CVString CVNewStringScanningUpToCharactersInList(CVString* restrict sc
 }
 
 
-CV_INLINE CVSize CVStringScanUpToCharactersInList(CVString* restrict scannedString, const CVString restrict stopCharacters){
+CV_INLINE CVSize CVStringScanUpToCharactersInList(CVString* scannedString, const CVString stopCharacters){
 	CVString scannedStringTemp = *scannedString;
 	CVSize scannedCount = 0;
 	CVSize stopCharactersSize = strlen(stopCharacters);
@@ -494,7 +500,7 @@ CV_INLINE CVSize CVStringScanUpToCharactersInList(CVString* restrict scannedStri
 	return scannedCount;
 }
 
-CV_INLINE CVString CVNewStringScanningUpToString(CVString* restrict scannedString, const CVString restrict stopString){
+CV_INLINE CVString CVNewStringScanningUpToString(CVString* scannedString, const CVString stopString){
 	CVString scannedStringTemp = *scannedString;
 	CVSize scannedCount = 0;
 	CVSize capacity = 1;
@@ -524,7 +530,7 @@ CV_INLINE CVString CVNewStringScanningUpToString(CVString* restrict scannedStrin
 }
 
 
-CV_INLINE CVSize CVStringScanUpToString(CVString* restrict scannedString, const CVString restrict stopString){
+CV_INLINE CVSize CVStringScanUpToString(CVString* scannedString, const CVString stopString){
 	CVString scannedStringTemp = *scannedString;
 	CVSize scannedCount = 0;
 	while (scannedStringTemp[0]) {
@@ -546,7 +552,7 @@ CV_INLINE CVSize CVStringScanUpToString(CVString* restrict scannedString, const 
 }
 
 
-CV_INLINE CVSize CVStringScanIndex(CVString* restrict scannedString, CVIndex* restrict scannedIndex){
+CV_INLINE CVSize CVStringScanIndex(CVString* scannedString, CVIndex* scannedIndex){
 	CVString scannedStringTemp;
 	CVSize scannedCount = 0;
 	CVIndex scannedValue = strtol(*scannedString, &scannedStringTemp, 10);
@@ -559,7 +565,7 @@ CV_INLINE CVSize CVStringScanIndex(CVString* restrict scannedString, CVIndex* re
 }
 
 
-CV_INLINE CVInteger CVStringScanInteger(CVString* restrict scannedString, CVInteger* restrict scannedInteger){
+CV_INLINE CVInteger CVStringScanInteger(CVString* scannedString, CVInteger* scannedInteger){
 	CVString scannedStringTemp;
 	CVSize scannedCount = 0;
 	CVInteger scannedValue = strtol(*scannedString, &scannedStringTemp, 10);
@@ -571,7 +577,7 @@ CV_INLINE CVInteger CVStringScanInteger(CVString* restrict scannedString, CVInte
 	return scannedCount;
 }
 
-CV_INLINE CVSize CVStringScanFloat(CVString* restrict scannedString, float* restrict scannedFloat){
+CV_INLINE CVSize CVStringScanFloat(CVString* scannedString, float*  scannedFloat){
 	CVString scannedStringTemp;
 	CVSize scannedCount = 0;
 	float scannedValue = strtof(*scannedString, &scannedStringTemp);
@@ -582,7 +588,7 @@ CV_INLINE CVSize CVStringScanFloat(CVString* restrict scannedString, float* rest
 	}
 	return scannedCount;
 }
-CV_INLINE CVSize CVStringScanDouble(CVString* restrict scannedString, double* restrict scannedDouble){
+CV_INLINE CVSize CVStringScanDouble(CVString* scannedString, double* scannedDouble){
 	CVString scannedStringTemp;
 	CVSize scannedCount = 0;
 	double scannedValue = strtod(*scannedString, &scannedStringTemp);
@@ -595,7 +601,7 @@ CV_INLINE CVSize CVStringScanDouble(CVString* restrict scannedString, double* re
 }
 
 
-CV_INLINE CVSize CVStringScanStrictIndex(CVString* restrict scannedString, CVIndex* restrict scannedIndex){
+CV_INLINE CVSize CVStringScanStrictIndex(CVString* scannedString, CVIndex* scannedIndex){
 	CVSize scannedCount = 0;
 	if(!isspace(**scannedString)){
 		CVString scannedStringTemp;
@@ -610,7 +616,7 @@ CV_INLINE CVSize CVStringScanStrictIndex(CVString* restrict scannedString, CVInd
 }
 
 
-CV_INLINE CVInteger CVStringScanStrictInteger(CVString* restrict scannedString, CVInteger* restrict scannedInteger){
+CV_INLINE CVInteger CVStringScanStrictInteger(CVString* scannedString, CVInteger* scannedInteger){
 	CVSize scannedCount = 0;
 	if(!isspace(**scannedString)){
 		CVString scannedStringTemp;
@@ -624,7 +630,7 @@ CV_INLINE CVInteger CVStringScanStrictInteger(CVString* restrict scannedString, 
 	return scannedCount;
 }
 
-CV_INLINE CVSize CVStringScanStrictFloat(CVString* restrict scannedString, float* restrict scannedFloat){
+CV_INLINE CVSize CVStringScanStrictFloat(CVString* scannedString, float* scannedFloat){
 	CVSize scannedCount = 0;
 	if(!isspace(**scannedString)){
 		CVString scannedStringTemp;
@@ -638,7 +644,7 @@ CV_INLINE CVSize CVStringScanStrictFloat(CVString* restrict scannedString, float
 	return scannedCount;
 }
 
-CV_INLINE CVSize CVStringScanStrictDouble(CVString* restrict scannedString, double* restrict scannedDouble){
+CV_INLINE CVSize CVStringScanStrictDouble(CVString* scannedString, double* scannedDouble){
 	CVSize scannedCount = 0;
 	if(!isspace(**scannedString)){
 		CVString scannedStringTemp;
@@ -653,7 +659,7 @@ CV_INLINE CVSize CVStringScanStrictDouble(CVString* restrict scannedString, doub
 }
 
 
-CV_INLINE CVSize CVStringScanCharactersList(CVString* scannedString, const CVString restrict charactersList){
+CV_INLINE CVSize CVStringScanCharactersList(CVString* scannedString, const CVString charactersList){
 	CVString scannedStringTemp = *scannedString;
 	CVSize scannedCount = 0;
 	CVSize charListIndex = 0;
@@ -683,7 +689,7 @@ CV_INLINE CVBool _CVStringIsInSet(CVChar readChar, CVString const charSet){
 	return charFound;
 }
 
-CV_INLINE void CVStringTrim(CVString restrict theString, CVString const trimCharacters){
+CV_INLINE void CVStringTrim(CVString theString, CVString const trimCharacters){
 	if(theString && theString[0]){
 		CVString curString = theString;
 		CVIndex stringIndex = strlen(curString);
@@ -695,7 +701,7 @@ CV_INLINE void CVStringTrim(CVString restrict theString, CVString const trimChar
 	}
 }
 
-CV_INLINE void CVStringTrimSpaces(CVString restrict theString) {
+CV_INLINE void CVStringTrimSpaces(CVString theString) {
 	if(theString && theString[0]){
 		CVString curString = theString;
 		CVIndex stringIndex = strlen(curString);
@@ -725,7 +731,7 @@ CV_INLINE CVString CVNewStringByRemovingFileExtension(const CVString theString) 
 		return NULL;
 	}
 	
-	if ((newString = calloc(sizeof(char),strlen(theString) + 1)) == NULL){
+	if ((newString = (char *)calloc(sizeof(char),strlen(theString) + 1)) == NULL){
 		return NULL;
 	}
 	
@@ -768,14 +774,14 @@ CV_INLINE CVString CVNewStringFromPathExtension(const CVString theString) {
 		if (lastPathSeparator != NULL) {
 			if (lastPathSeparator < lastExtensionSeparator) {
 				CVSize extensionLength = ((theString+stringLength)-(lastExtensionSeparator+1));
-				if ((newString = calloc(sizeof(char),extensionLength + 1)) == NULL){
+				if ((newString = (char *)calloc(sizeof(char),extensionLength + 1)) == NULL){
 					return NULL;
 				}
 				strcpy(newString, (lastExtensionSeparator+1));
 			}
 		}else{
 			CVSize extensionLength = ((theString+stringLength)-(lastExtensionSeparator+1));
-			if ((newString = calloc(sizeof(char),extensionLength + 1)) == NULL){
+			if ((newString = (char *)calloc(sizeof(char),extensionLength + 1)) == NULL){
 				return NULL;
 			}
 			strcpy(newString, (lastExtensionSeparator+1));

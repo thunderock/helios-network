@@ -1,9 +1,10 @@
 main:	clean
 	mkdir Compiled
-	# emcc -g src/sudoku.c src/utils.c src/wasm.c -o src-compiled/sudoku.js -s EXPORTED_FUNCTIONS='["_generateBoard", "_validateBoard"]' -s EXTRA_EXPORTED_RUNTIME_METHODS='["ccall", "cwrap"]'
-	emcc -Wl,--whole-archive Source/CVNetwork.c -o Compiled/test.mjs \
+	em++ -Wl,--whole-archive Source/CVNetwork.cpp \
+	
+	-o Compiled/test.mjs \
 		-O3 \
-		--std=c17 \
+		# --std=c++17 \
 		-Wall \
 		-s EXPORT_ES6=1 \
 		-s MODULARIZE=1 \

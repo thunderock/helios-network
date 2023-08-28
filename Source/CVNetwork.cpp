@@ -1,12 +1,13 @@
-//
-//  CVNetwork.c
-//
-//
-//  Created by Filipi Nascimento Silva on 9/22/12.
-//
-//
+/**
+ * @Author: Ashutosh Tiwari
+ * @Date:   2023-08-28 12:17:13
+ * @Last Modified by:   Ashutosh Tiwari
+ * @Last Modified time: 2023-08-28 14:03:34
+ */
+
 #include "CVNetwork.h"
 #include "uthash.h"
+#include<iostream>
 
 
 CVBool CVNetworkAddNewEdges(CVNetworkRef network, CVIndex* fromIndices, CVIndex* toIndices, CVFloat* weights, CVSize count){
@@ -51,28 +52,31 @@ void CVNetworkPrint(const CVNetworkRef network){
 		CVIndex i;
 		CVSize toVerticesCount = network->vertexNumOfEdges[fromVertex];
 		CVIndex* toVertices = network->vertexEdgesLists[fromVertex];
-		printf("%"CVIndexScan"\t:",fromVertex);
+		// fix this
+		// printf("%s"CVIndexScan"\t:",fromVertex);
+		std::cout << fromVertex << "\t:";
 		for (i=0; i<toVerticesCount; i++) {
 			CVIndex toVertex = toVertices[i];
-			printf("\t" "%"CVIndexScan,toVertex);
+			// printf("\t" "%"CVIndexScan,toVertex);
+			std::cout << "\t" << toVertex;
 		}
 		printf("\n");
 	}
 }
 
 CVNetworkRef CV_NewAllocationNetwork(CVSize verticesCount){
-	CVNetworkRef newNetwork = malloc(sizeof(CVNetwork));
-	newNetwork->vertexNumOfEdges = calloc(verticesCount, sizeof(CVSize));
-	newNetwork->vertexCapacityOfEdges = calloc(verticesCount, sizeof(CVSize));
-	newNetwork->vertexEdgesLists = calloc(verticesCount, sizeof(CVSize*));
-	newNetwork->vertexEdgesIndices = calloc(verticesCount, sizeof(CVSize*));
+	CVNetworkRef newNetwork = (CVNetwork *)malloc(sizeof(CVNetwork));
+	newNetwork->vertexNumOfEdges = (unsigned int *)calloc(verticesCount, sizeof(CVSize));
+	newNetwork->vertexCapacityOfEdges = (unsigned int *)calloc(verticesCount, sizeof(CVSize));
+	newNetwork->vertexEdgesLists = (unsigned int **)calloc(verticesCount, sizeof(CVSize*));
+	newNetwork->vertexEdgesIndices = (unsigned int **)calloc(verticesCount, sizeof(CVSize*));
 
-	newNetwork->vertexNumOfInEdges = calloc(verticesCount, sizeof(CVSize));
-	newNetwork->vertexCapacityOfInEdges = calloc(verticesCount, sizeof(CVSize));
-	newNetwork->vertexInEdgesLists = calloc(verticesCount, sizeof(CVSize*));
-	newNetwork->vertexInEdgesIndices = calloc(verticesCount, sizeof(CVSize*));
-	newNetwork->verticesWeights = calloc(verticesCount, sizeof(CVFloat));
-	newNetwork->verticesEnabled = calloc(verticesCount, sizeof(CVBool));
+	newNetwork->vertexNumOfInEdges = (unsigned int *)calloc(verticesCount, sizeof(CVSize));
+	newNetwork->vertexCapacityOfInEdges = (unsigned int *)calloc(verticesCount, sizeof(CVSize));
+	newNetwork->vertexInEdgesLists = (unsigned int **)calloc(verticesCount, sizeof(CVSize*));
+	newNetwork->vertexInEdgesIndices =(unsigned int **) calloc(verticesCount, sizeof(CVSize*));
+	newNetwork->verticesWeights = (float *)calloc(verticesCount, sizeof(CVFloat));
+	newNetwork->verticesEnabled = (unsigned char *)calloc(verticesCount, sizeof(CVBool));
 	CVIndex i;
 	for(i=0;i<verticesCount;i++){
 		newNetwork->verticesWeights[i] = 1.0f;
@@ -109,11 +113,11 @@ CVNetworkRef CV_NewAllocationNetwork(CVSize verticesCount){
 void CV_NetworkDestroyProperties(CVNetworkRef theNetwork){
 	CVIndex i;
 	for (i=0; i<theNetwork->propertiesCount; i++) {
-		CVPropertyType type = theNetwork->propertiesTypes[i];
+		CVPropertyType type = (CVPropertyType)theNetwork->propertiesTypes[i];
 		
 		if(type==CVStringPropertyType){
 			CVIndex j;
-			CVString* values = theNetwork->propertiesData[i];
+			CVString* values = (CVString *)theNetwork->propertiesData[i];
 			for (j=0; j<theNetwork->verticesCount; j++) {
 				free(values[j]);
 			}
@@ -176,12 +180,12 @@ void CVNetworkAppendProperty(CVNetworkRef theNetwork, CVString name, CVPropertyT
 	}else{
 		theNetwork->propertiesCount++;
 		newIndex = theNetwork->propertiesCount-1;
-		theNetwork->propertiesData  = realloc(theNetwork->propertiesData, sizeof(void*)*theNetwork->propertiesCount);
-		theNetwork->propertiesNames = realloc(theNetwork->propertiesNames, sizeof(CVString)*theNetwork->propertiesCount);
-		theNetwork->propertiesTypes = realloc(theNetwork->propertiesTypes, sizeof(CVPropertyType)*theNetwork->propertiesCount);
+		*theNetwork->propertiesData  = realloc(theNetwork->propertiesData, sizeof(void*)*theNetwork->propertiesCount);
+		theNetwork->propertiesNames = (char **)realloc(theNetwork->propertiesNames, sizeof(CVString)*theNetwork->propertiesCount);
+		theNetwork->propertiesTypes = (CVPropertyType *)(theNetwork->propertiesTypes, sizeof(CVPropertyType)*theNetwork->propertiesCount);
 	
-		theNetwork->propertiesTypes[newIndex] =type;
-		theNetwork->propertiesNames[newIndex] = calloc(strlen(name)+1, sizeof(CVChar));
+		theNetwork->propertiesTypes[newIndex] =(CVPropertyType)type;
+		theNetwork->propertiesNames[newIndex] = (char *)calloc(strlen(name)+1, sizeof(CVChar));
 		strncpy(theNetwork->propertiesNames[newIndex], name, strlen(name));
 	}
 	

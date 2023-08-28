@@ -1,3 +1,9 @@
+/**
+ * @Author: Ashutosh Tiwari
+ * @Date:   2023-08-28 12:17:13
+ * @Last Modified by:   Ashutosh Tiwari
+ * @Last Modified time: 2023-08-28 12:47:26
+ */
 //
 //  CVNetwork.h
 //  
@@ -141,20 +147,20 @@ CV_INLINE void CVNetworkGrowEdgesCount(CVNetworkRef network,CVSize growSize){
 	network->edgesCount+=growSize;
 	if(CVUnlikely(network->edgesCapacity < network->edgesCount)){
 		network->edgesCapacity = 2 * network->edgesCount;
-		network->edgeFromList = realloc(network->edgeFromList, sizeof(CVIndex)*network->edgesCapacity);
-		network->edgeToList = realloc(network->edgeToList, sizeof(CVIndex)*network->edgesCapacity);
+		network->edgeFromList = (unsigned int *)realloc(network->edgeFromList, sizeof(CVIndex)*network->edgesCapacity);
+		network->edgeToList = (unsigned int *)realloc(network->edgeToList, sizeof(CVIndex)*network->edgesCapacity);
 		if(network->edgeWeighted)
-			network->edgesWeights = realloc(network->edgesWeights, sizeof(CVFloat)*network->edgesCapacity);
+			network->edgesWeights = (float *)realloc(network->edgesWeights, sizeof(CVFloat)*network->edgesCapacity);
 	}
 }
 CV_INLINE void CVNetworkGrowEdgesCapacity(CVNetworkRef network,CVSize capacityIncrease){
 	CVSize newCapacity = network->edgesCount+capacityIncrease;
 	if(CVUnlikely(network->edgesCapacity < newCapacity)){
 		network->edgesCapacity = 2 * newCapacity;
-		network->edgeFromList = realloc(network->edgeFromList, sizeof(CVIndex)*network->edgesCapacity);
-		network->edgeToList = realloc(network->edgeToList, sizeof(CVIndex)*network->edgesCapacity);
+		network->edgeFromList = (unsigned int *)realloc(network->edgeFromList, sizeof(CVIndex)*network->edgesCapacity);
+		network->edgeToList = (unsigned int *)realloc(network->edgeToList, sizeof(CVIndex)*network->edgesCapacity);
 		if(network->edgeWeighted)
-			network->edgesWeights = realloc(network->edgesWeights, sizeof(CVFloat)*network->edgesCapacity);
+			network->edgesWeights = (float *)realloc(network->edgesWeights, sizeof(CVFloat)*network->edgesCapacity);
 	}
 }
 CV_INLINE void CVNetworkGrowVertexSetEdgeForVertex(CVNetworkRef network,CVIndex edgeIndex,CVIndex vertexIndex,CVIndex toVertexIndex){
