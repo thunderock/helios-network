@@ -1,3 +1,9 @@
+/**
+ * @Author: Ashutosh Tiwari
+ * @Date:   2023-08-28 12:17:13
+ * @Last Modified by:   Ashutosh Tiwari
+ * @Last Modified time: 2023-08-28 16:40:35
+ */
 //
 //  CVBasicArrays.h
 //  CVNetwork
@@ -66,7 +72,7 @@ CV_INLINE CVFloatArray* CVFloatArrayInitWithCapacity(CVSize capacity, CVFloatArr
 	if (capacity==0) {
 		theArray->data = NULL;
 	}else{
-		theArray->data = calloc(theArray->_capacity, sizeof(CVFloat));
+		theArray->data = (float *)calloc(theArray->_capacity, sizeof(CVFloat));
 	}
 	return theArray;
 }
@@ -79,9 +85,9 @@ CV_INLINE void CVFloatArrayDestroy(CVFloatArray* theArray){
 
 CV_INLINE void CVFloatArrayReallocToCapacity(CVSize newCapacity, CVFloatArray* theArray){
 	if(theArray->data!=NULL){
-		theArray->data = realloc(theArray->data,newCapacity*sizeof(CVFloat));
+		theArray->data = (float *)realloc(theArray->data,newCapacity*sizeof(CVFloat));
 	}else{
-		theArray->data = calloc(newCapacity, sizeof(CVFloat));
+		theArray->data = (float *)calloc(newCapacity, sizeof(CVFloat));
 	}
 	theArray->_capacity=newCapacity;
 	if(theArray->_capacity<theArray->count)
@@ -155,7 +161,7 @@ CV_INLINE CVDoubleArray* CVDoubleArrayInitWithCapacity(CVSize capacity, CVDouble
 	if (capacity==0) {
 		theArray->data = NULL;
 	}else{
-		theArray->data = calloc(theArray->_capacity, sizeof(CVDouble));
+		theArray->data = (double *)calloc(theArray->_capacity, sizeof(CVDouble));
 	}
 	return theArray;
 }
@@ -168,9 +174,9 @@ CV_INLINE void CVDoubleArrayDestroy(CVDoubleArray* theArray){
 
 CV_INLINE void CVDoubleArrayReallocToCapacity(CVSize newCapacity, CVDoubleArray* theArray){
 	if(theArray->data!=NULL){
-		theArray->data = realloc(theArray->data,newCapacity*sizeof(CVDouble));
+		theArray->data = (double *)realloc(theArray->data,newCapacity*sizeof(CVDouble));
 	}else{
-		theArray->data = calloc(newCapacity, sizeof(CVDouble));
+		theArray->data = (double *)calloc(newCapacity, sizeof(CVDouble));
 	}
 	theArray->_capacity=newCapacity;
 	if(theArray->_capacity<theArray->count)
@@ -245,7 +251,7 @@ CV_INLINE CVIntegerArray* CVIntegerArrayInitWithCapacity(CVUInteger capacity, CV
 	if (capacity==0) {
 		theArray->data = NULL;
 	}else{
-		theArray->data = calloc(theArray->_capacity, sizeof(CVInteger));
+		theArray->data = (int *)calloc(theArray->_capacity, sizeof(CVInteger));
 	}
 	return theArray;
 }
@@ -261,9 +267,9 @@ CV_INLINE void CVIntegerArrayReallocToCapacity(CVUInteger newCapacity, CVInteger
 		return;
 	}
 	if(theArray->data!=NULL){
-		theArray->data = realloc(theArray->data,newCapacity*sizeof(CVInteger));
+		theArray->data = (int *)realloc(theArray->data,newCapacity*sizeof(CVInteger));
 	}else{
-		theArray->data = calloc(newCapacity, sizeof(CVInteger));
+		theArray->data = (int *)calloc(newCapacity, sizeof(CVInteger));
 	}
 	theArray->_capacity=newCapacity;
 	if(theArray->_capacity<theArray->count) theArray->count = theArray->_capacity;
@@ -338,7 +344,7 @@ CV_INLINE CVUIntegerArray* CVUIntegerArrayInitWithCapacity(CVUInteger capacity, 
 	if(capacity==0) {
 		theArray->data = NULL;
 	}else{
-		theArray->data = calloc(theArray->_capacity, sizeof(CVUInteger));
+		theArray->data = (unsigned int *)(theArray->_capacity, sizeof(CVUInteger));
 	}
 	return theArray;
 }
@@ -351,9 +357,9 @@ CV_INLINE void CVUIntegerArrayDestroy(CVUIntegerArray* theArray){
 
 CV_INLINE void CVUIntegerArrayReallocToCapacity(CVUInteger newCapacity, CVUIntegerArray* theArray){
 	if(theArray->data!=NULL){
-		theArray->data = realloc(theArray->data,newCapacity*sizeof(CVUInteger));
+		theArray->data = (unsigned int *)realloc(theArray->data,newCapacity*sizeof(CVUInteger));
 	}else{
-		theArray->data = calloc(newCapacity, sizeof(CVUInteger));
+		theArray->data = (unsigned int *)calloc(newCapacity, sizeof(CVUInteger));
 	}
 	theArray->_capacity=newCapacity;
 	if(theArray->_capacity<theArray->count) theArray->count = theArray->_capacity;
@@ -427,7 +433,7 @@ CV_INLINE CVGenericArray* CVGenericArrayInitWithCapacity(CVUInteger capacity, CV
 	if(capacity==0) {
 		theArray->data = NULL;
 	}else{
-		theArray->data = calloc(theArray->_capacity, sizeof(void*));
+		*theArray->data = calloc(theArray->_capacity, sizeof(void*));
 	}
 	return theArray;
 }
@@ -442,9 +448,9 @@ CV_INLINE void CVGenericArrayDestroy(CVGenericArray* theArray){
 
 CV_INLINE void CVGenericArrayReallocToCapacity(CVUInteger newCapacity, CVGenericArray* theArray){
 	if(theArray->data!=NULL){
-		theArray->data = realloc(theArray->data,newCapacity*sizeof(void*));
+		*theArray->data = realloc(theArray->data,newCapacity*sizeof(void*));
 	}else{
-		theArray->data = calloc(newCapacity, sizeof(void*));
+		*theArray->data = calloc(newCapacity, sizeof(void*));
 	}
 	theArray->_capacity=newCapacity;
 	if(theArray->_capacity<theArray->count) theArray->count = theArray->_capacity;

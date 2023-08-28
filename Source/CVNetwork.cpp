@@ -2,7 +2,7 @@
  * @Author: Ashutosh Tiwari
  * @Date:   2023-08-28 12:17:13
  * @Last Modified by:   Ashutosh Tiwari
- * @Last Modified time: 2023-08-28 14:03:34
+ * @Last Modified time: 2023-08-28 16:34:57
  */
 
 #include "CVNetwork.h"
@@ -54,11 +54,13 @@ void CVNetworkPrint(const CVNetworkRef network){
 		CVIndex* toVertices = network->vertexEdgesLists[fromVertex];
 		// fix this
 		// printf("%s"CVIndexScan"\t:",fromVertex);
-		std::cout << fromVertex << "\t:";
+		// fix cvindexscan error
+		// fprintf(networkFile,"%"CVIndexScan" \"%s\"\n",i+1,theNetwork->vertexNames[i]);
+		printf("%CVIndexScan\t:",fromVertex);
 		for (i=0; i<toVerticesCount; i++) {
 			CVIndex toVertex = toVertices[i];
-			// printf("\t" "%"CVIndexScan,toVertex);
-			std::cout << "\t" << toVertex;
+			printf("\t" "%CVIndexScan",toVertex);
+			// std::cout << "\t" << toVertex;
 		}
 		printf("\n");
 	}
@@ -192,11 +194,11 @@ void CVNetworkAppendProperty(CVNetworkRef theNetwork, CVString name, CVPropertyT
 	
 	switch (type) {
 		case CVStringPropertyType:{
-			CVString* values = calloc(theNetwork->verticesCount, sizeof(CVString));
-			CVString* stringValues = data;
+			CVString* values = (char **)calloc(theNetwork->verticesCount, sizeof(CVString));
+			CVString* stringValues = (char **)data;
 			CVIndex i;
 			for(i=0; i<theNetwork->verticesCount; i++) {
-				values[i] = calloc(strlen(stringValues[i])+1, sizeof(CVChar));
+				values[i] = (char *)calloc(strlen(stringValues[i])+1, sizeof(CVChar));
 				strncpy(values[i], stringValues[i], strlen(stringValues[i]));
 			}
 			if(isNameProperty) {
@@ -301,7 +303,7 @@ CVNetworkRef CVNewNetworkWithNetwork(CVNetworkRef originalNetwork, CVBool edgeWe
 }
 
 void CVNetworkWriteToFile(CVNetworkRef theNetwork, FILE* networkFile){
-	fprintf(networkFile,"#vertices ""%"CVSizeScan" nonweighted\n",theNetwork->verticesCount);
+	fprintf(networkFile,"#vertices %CVSizeScan nonweighted\n",theNetwork->verticesCount);
 	if(theNetwork->vertexNames){
 		CVIndex i;
 		for(i=0;i<theNetwork->verticesCount;i++){
@@ -319,9 +321,9 @@ void CVNetworkWriteToFile(CVNetworkRef theNetwork, FILE* networkFile){
 		CVIndex toVertex = edgesTo[edgeIndex];
 		if(theNetwork->edgeWeighted){
 			CVFloat weight = edgesWeights[edgeIndex];
-			fprintf(networkFile,"%"CVIndexScan" ""%"CVIndexScan" ""%"CVFloatScan"\n",fromVertex,toVertex,weight);
+			fprintf(networkFile,"%CVIndexScan %CVIndexScan %CVFloatScan\n",fromVertex,toVertex,weight);
 		}else{
-			fprintf(networkFile,"%"CVIndexScan" ""%"CVIndexScan"\n",fromVertex,toVertex);
+			fprintf(networkFile,"%CVIndexScan %CVIndexScan\n",fromVertex,toVertex);
 		}
 	}
 	CVIndex propertyIndex;
@@ -331,16 +333,16 @@ void CVNetworkWriteToFile(CVNetworkRef theNetwork, FILE* networkFile){
 		CVString name = theNetwork->propertiesNames[propertyIndex];
 		switch (type) {
 			case CVNumberPropertyType:{
-				CVFloat* floatData = data;
+				CVFloat* floatData = (float *)data;
 				fprintf(networkFile,"#v \"%s\" n\n",name);
 				CVIndex i;
 				for(i=0;i<theNetwork->verticesCount;i++){
-					fprintf(networkFile,"%"CVFloatScan"\n",floatData[i]);
+					fprintf(networkFile,"%CVFloatScan\n",floatData[i]);
 				}
 				break;
 			}
 			case CVStringPropertyType:{
-				CVString* stringData = data;
+				CVString* stringData = (char **)data;
 				fprintf(networkFile,"#v \"%s\" s\n",name);
 				CVIndex i;
 				for(i=0;i<theNetwork->verticesCount;i++){
@@ -349,20 +351,20 @@ void CVNetworkWriteToFile(CVNetworkRef theNetwork, FILE* networkFile){
 				break;
 			}
 			case CVVector2DPropertyType:{
-				CVFloat* floatData = data;
+				CVFloat* floatData = (float *)data;
 				fprintf(networkFile,"#v \"%s\" v2\n",name);
 				CVIndex i;
 				for(i=0;i<theNetwork->verticesCount;i++){
-					fprintf(networkFile,"%"CVFloatScan" %"CVFloatScan"\n",floatData[i*2],floatData[i*2+1]);
+					fprintf(networkFile,"%CVFloatScan %CVFloatScan\n",floatData[i*2],floatData[i*2+1]);
 				}
 				break;
 			}
 			case CVVector3DPropertyType:{
-				CVFloat* floatData = data;
+				CVFloat* floatData = (float *)data;
 				fprintf(networkFile,"#v \"%s\" v3\n",name);
 				CVIndex i;
 				for(i=0;i<theNetwork->verticesCount;i++){
-					fprintf(networkFile,"%"CVFloatScan" %"CVFloatScan" %"CVFloatScan"\n",floatData[i*3],floatData[i*3+1],floatData[i*3+2]);
+					fprintf(networkFile,"%CVFloatScan %CVFloatScan %CVFloatScan\n",floatData[i*3],floatData[i*3+1],floatData[i*3+2]);
 				}
 				break;
 			}
@@ -375,11 +377,11 @@ void CVNetworkWriteToFile(CVNetworkRef theNetwork, FILE* networkFile){
 
 
 void CVNetworkWriteToPajekFile(CVNetworkRef theNetwork, FILE* networkFile){
-	fprintf(networkFile,"*vertices ""%"CVSizeScan"\n",theNetwork->verticesCount);
+	fprintf(networkFile,"*vertices %CVSizeScan\n",theNetwork->verticesCount);
 	if(theNetwork->vertexNames){
 		CVIndex i;
 		for(i=0;i<theNetwork->verticesCount;i++){
-			fprintf(networkFile,"%"CVIndexScan" \"%s\"\n",i+1,theNetwork->vertexNames[i]);
+			fprintf(networkFile,"%CVIndexScan \"%s\"\n",i+1,theNetwork->vertexNames[i]);
 		}
 	}
 	if(theNetwork->directed){
@@ -397,9 +399,9 @@ void CVNetworkWriteToPajekFile(CVNetworkRef theNetwork, FILE* networkFile){
 		CVIndex toVertex = edgesTo[edgeIndex];
 		if(theNetwork->edgeWeighted){
 			CVFloat weight = edgesWeights[edgeIndex];
-			fprintf(networkFile,"%"CVIndexScan" ""%"CVIndexScan" ""%"CVFloatScan"\n",fromVertex+1,toVertex+1,weight);
+			fprintf(networkFile,"%CVIndexScan %CVIndexScan" "%CVFloatScan\n",fromVertex+1,toVertex+1,weight);
 		}else{
-			fprintf(networkFile,"%"CVIndexScan" ""%"CVIndexScan"\n",fromVertex+1,toVertex+1);
+			fprintf(networkFile,"%CVIndexScan" "%CVIndexScan\n",fromVertex+1,toVertex+1);
 		}
 	}
 }
@@ -416,9 +418,9 @@ void CVNetworkWriteToEdgesFile(CVNetworkRef theNetwork, FILE* networkFile){
 		CVIndex toVertex = edgesTo[edgeIndex];
 		if(theNetwork->edgeWeighted){
 			CVFloat weight = edgesWeights[edgeIndex];
-			fprintf(networkFile,"%"CVIndexScan" ""%"CVIndexScan" ""%"CVFloatScan"\n",fromVertex,toVertex,weight);
+			fprintf(networkFile,"%CVIndexScan" "%CVIndexScan" "%CVFloatScan\n",fromVertex,toVertex,weight);
 		}else{
-			fprintf(networkFile,"%"CVIndexScan" ""%"CVIndexScan"\n",fromVertex,toVertex);
+			fprintf(networkFile,"%CVIndexScan" "%CVIndexScan\n",fromVertex,toVertex);
 		}
 	}
 }
@@ -525,11 +527,11 @@ CVNetworkRef CVNewNetworkFromXNETFile(FILE* networkFile){
 			if(isReadingVertices){
 				if(currentVertex<verticesCount){
 					if(!theNetwork->vertexNames){
-						theNetwork->vertexNames = calloc(verticesCount, sizeof(CVString));
+						theNetwork->vertexNames = (char **)calloc(verticesCount, sizeof(CVString));
 					}
 					CVStringTrim(lineSegment, "\"\n \t");
 					CVSize lineLength = strlen(lineSegment);
-					theNetwork->vertexNames[currentVertex] = calloc(lineLength+1, sizeof(CVChar));
+					theNetwork->vertexNames[currentVertex] = (char *)calloc(lineLength+1, sizeof(CVChar));
 					strncpy(theNetwork->vertexNames[currentVertex], lineSegment, lineLength);
 					currentVertex++;
 				}else{
@@ -539,14 +541,14 @@ CVNetworkRef CVNewNetworkFromXNETFile(FILE* networkFile){
 				unsigned long _longFromIndex = 0;
 				unsigned long _longToIndex = 0;
 				CVFloat _doubleWeight = 1.0;
-				if(sscanf(lineSegment, "%ld %ld " "%"CVFloatScan,&_longFromIndex,&_longToIndex,&_doubleWeight)>=2){
+				if(sscanf(lineSegment, "%ld %ld " "%CVFloatScan",&_longFromIndex,&_longToIndex,&_doubleWeight)>=2){
 					edgesCount++;
 					if(CVUnlikely(edgesCapacity < edgesCount)){
 						edgesCapacity = CVCapacityGrow(edgesCount);
-						fromIndices = realloc(fromIndices, sizeof(CVIndex)*edgesCapacity);
-						toIndices = realloc(toIndices, sizeof(CVIndex)*edgesCapacity);
+						fromIndices = (unsigned int *)realloc(fromIndices, sizeof(CVIndex)*edgesCapacity);
+						toIndices = (unsigned int *)realloc(toIndices, sizeof(CVIndex)*edgesCapacity);
 						if(theNetwork->edgeWeighted){
-							edgesWeights = realloc(edgesWeights, sizeof(CVFloat)*edgesCapacity);
+							edgesWeights = (float *)realloc(edgesWeights, sizeof(CVFloat)*edgesCapacity);
 						}
 					}
 					fromIndices[edgesCount-1]=_longFromIndex;
@@ -560,8 +562,8 @@ CVNetworkRef CVNewNetworkFromXNETFile(FILE* networkFile){
 				switch (propertyType) {
 					case CVNumberPropertyType:{
 						CVFloat currentValue = 0.0f;
-						if(sscanf(lineSegment, "%"CVFloatScan,&currentValue)>0&&propertyVertexIndex<verticesCount){
-							CVFloat* currentData = propertyData;
+						if(sscanf(lineSegment, "%CVFloatScan",&currentValue)>0&&propertyVertexIndex<verticesCount){
+							CVFloat* currentData = (float *)propertyData;
 							currentData[propertyVertexIndex] = currentValue;
 							propertyVertexIndex++;
 							if(propertyVertexIndex==verticesCount){
@@ -574,7 +576,7 @@ CVNetworkRef CVNewNetworkFromXNETFile(FILE* networkFile){
 						CVStringScanCharacters(&lineSegment, '\"');
 						CVString currentString = CVNewStringScanningUpToCharacter(&lineSegment, '\"');
 						
-						CVString* currentData = propertyData;
+						CVString* currentData = (char **)propertyData;
 						currentData[propertyVertexIndex] = currentString;
 						propertyVertexIndex++;
 						if(propertyVertexIndex==verticesCount){
@@ -585,8 +587,8 @@ CVNetworkRef CVNewNetworkFromXNETFile(FILE* networkFile){
 					case CVVector2DPropertyType:{
 						CVFloat currentValue1 = 0.0f;
 						CVFloat currentValue2 = 0.0f;
-						if(sscanf(lineSegment, "%"CVFloatScan" %"CVFloatScan,&currentValue1,&currentValue2)>0&&propertyVertexIndex<verticesCount){
-							CVFloat* currentData = propertyData;
+						if(sscanf(lineSegment, "%CVFloatScan" "%CVFloatScan",&currentValue1,&currentValue2)>0&&propertyVertexIndex<verticesCount){
+							CVFloat* currentData = (float *)propertyData;
 							currentData[propertyVertexIndex*2] = currentValue1;
 							currentData[propertyVertexIndex*2+1] = currentValue2;
 							propertyVertexIndex++;
@@ -600,8 +602,8 @@ CVNetworkRef CVNewNetworkFromXNETFile(FILE* networkFile){
 						CVFloat currentValue1 = 0.0f;
 						CVFloat currentValue2 = 0.0f;
 						CVFloat currentValue3 = 0.0f;
-						if(sscanf(lineSegment, "%"CVFloatScan" %"CVFloatScan" %"CVFloatScan,&currentValue1,&currentValue2,&currentValue3)>0&&propertyVertexIndex<verticesCount){
-							CVFloat* currentData = propertyData;
+						if(sscanf(lineSegment, "%CVFloatScan" "%CVFloatScan" "%CVFloatScan",&currentValue1,&currentValue2,&currentValue3)>0&&propertyVertexIndex<verticesCount){
+							CVFloat* currentData = (float *)propertyData;
 							currentData[propertyVertexIndex*3] = currentValue1;
 							currentData[propertyVertexIndex*3+1] = currentValue2;
 							currentData[propertyVertexIndex*3+2] = currentValue3;
@@ -626,7 +628,7 @@ CVNetworkRef CVNewNetworkFromXNETFile(FILE* networkFile){
 			CVNetworkAddNewEdges(theNetwork, fromIndices,toIndices,edgesWeights, edgesCount);
 		}
 	}else{
-		fprintf(stderr, "Parsing error occurred[at line %"CVIndexScan"]: %s\n", currentLine, parsingError);
+		fprintf(stderr, "Parsing error occurred[at line %CVIndexScan]: %s\n", currentLine, parsingError);
 		CVNetworkDestroy(theNetwork);
 		theNetwork = NULL;
 	}
@@ -695,9 +697,9 @@ CVNetworkRef CVNewRegular2DNetwork(CVSize rows, CVSize columns, CVBool toroidal)
 	CVSize verticesCount = rows*columns;
 	CVSize maximumEdgesCount = verticesCount*2;
 	CVSize edgesCount = 0;
-	CVIndex* fromList = calloc(maximumEdgesCount, sizeof(CVIndex));
-	CVIndex* toList = calloc(maximumEdgesCount, sizeof(CVIndex));
-	CVFloat* positions = calloc(verticesCount*3, sizeof(CVFloat));
+	CVIndex* fromList = (unsigned int *)calloc(maximumEdgesCount, sizeof(CVIndex));
+	CVIndex* toList = (unsigned int *)calloc(maximumEdgesCount, sizeof(CVIndex));
+	CVFloat* positions = (float *)calloc(verticesCount*3, sizeof(CVFloat));
 	CVIndex i,j;
 	for (i=0; i<rows; i++) {
 		for (j=0; j<columns; j++) {
@@ -739,8 +741,8 @@ CVNetworkRef CVNewRegular2DNetwork(CVSize rows, CVSize columns, CVBool toroidal)
 CVNetworkRef CVNewRandomNetwork(CVSize verticesCount, CVFloat degree){
 	CVSize averageEdgesCount = floorf(verticesCount*degree)+1;
 	CVSize edgesCapacity = averageEdgesCount;
-	CVIndex* fromList = calloc(edgesCapacity, sizeof(CVIndex));
-	CVIndex* toList = calloc(edgesCapacity, sizeof(CVIndex));
+	CVIndex* fromList = (unsigned int *)calloc(edgesCapacity, sizeof(CVIndex));
+	CVIndex* toList = (unsigned int *)calloc(edgesCapacity, sizeof(CVIndex));
 	CVSize edgesCount = 0;
 	
 	double probability = degree/(double)verticesCount;
@@ -751,8 +753,8 @@ CVNetworkRef CVNewRandomNetwork(CVSize verticesCount, CVFloat degree){
 			if (CVRandomFloat()<probability){
 				if(edgesCapacity<edgesCount+1){
 					edgesCapacity = CVCapacityGrow(edgesCount+1);
-					fromList = realloc(fromList, sizeof(CVIndex)*edgesCapacity);
-					toList = realloc(toList, sizeof(CVIndex)*edgesCapacity);
+					fromList = (unsigned int *)realloc(fromList, sizeof(CVIndex)*edgesCapacity);
+					toList = (unsigned int *)realloc(toList, sizeof(CVIndex)*edgesCapacity);
 				}
 				fromList[edgesCount] = fromIndex;
 				toList[edgesCount] = toIndex;
@@ -770,8 +772,8 @@ CVNetworkRef CVNewRandomNetwork(CVSize verticesCount, CVFloat degree){
 
 CVNetworkRef CVNewFastRandomNetwork(CVSize verticesCount, CVFloat degree){
 	CVSize edgesCount = roundf(verticesCount*degree*0.5);
-	CVIndex* fromList = calloc(edgesCount, sizeof(CVIndex));
-	CVIndex* toList = calloc(edgesCount, sizeof(CVIndex));
+	CVIndex* fromList = (unsigned int *)calloc(edgesCount, sizeof(CVIndex));
+	CVIndex* toList = (unsigned int *)calloc(edgesCount, sizeof(CVIndex));
 	
 	CVIndex edgeIndex;
 	for (edgeIndex=0; edgeIndex<edgesCount; edgeIndex++) {
@@ -790,11 +792,11 @@ CVNetworkRef CVNewFastRandomNetwork(CVSize verticesCount, CVFloat degree){
 
 CVNetworkRef CVNewWaxmanNetwork(CVSize verticesCount,CVFloat alpha, CVFloat beta, CVSize dimension){
 	CVSize edgesCapacity = verticesCount*3;
-	CVIndex* fromList = calloc(edgesCapacity, sizeof(CVIndex));
-	CVIndex* toList = calloc(edgesCapacity, sizeof(CVIndex));
+	CVIndex* fromList = (unsigned int *)calloc(edgesCapacity, sizeof(CVIndex));
+	CVIndex* toList = (unsigned int *)calloc(edgesCapacity, sizeof(CVIndex));
 	CVSize edgesCount = 0;
-	CVFloat* positions = calloc(verticesCount*dimension, sizeof(CVFloat));
-	CVFloat* positions3D = calloc(verticesCount*3, sizeof(CVFloat));
+	CVFloat* positions = (float *)calloc(verticesCount*dimension, sizeof(CVFloat));
+	CVFloat* positions3D = (float *)calloc(verticesCount*3, sizeof(CVFloat));
 	
 	CVIndex vertexIndex;
 	for (vertexIndex=0; vertexIndex<verticesCount; vertexIndex++) {
@@ -809,7 +811,7 @@ CVNetworkRef CVNewWaxmanNetwork(CVSize verticesCount,CVFloat alpha, CVFloat beta
 	
 	CVIndex toIndex,fromIndex;
 	for (fromIndex=0; fromIndex<verticesCount; fromIndex++) {
-		printf("Oe %"CVUIntegerScan"      \r",fromIndex);
+		printf("Oe %CVUIntegerScan      \r",fromIndex);
 		fflush(stdout);
 		for (toIndex=fromIndex+1; toIndex<verticesCount; toIndex++) {
 			double distanceSquared = 0.0;
@@ -823,8 +825,8 @@ CVNetworkRef CVNewWaxmanNetwork(CVSize verticesCount,CVFloat alpha, CVFloat beta
 			if (CVRandomFloat()<probability){
 				if(edgesCapacity<edgesCount+1){
 					edgesCapacity = CVCapacityGrow(edgesCount+1);
-					fromList = realloc(fromList, sizeof(CVIndex)*edgesCapacity);
-					toList = realloc(toList, sizeof(CVIndex)*edgesCapacity);
+					fromList =(unsigned int *) realloc(fromList, sizeof(CVIndex)*edgesCapacity);
+					toList = (unsigned int *)realloc(toList, sizeof(CVIndex)*edgesCapacity);
 				}
 				fromList[edgesCount] = fromIndex;
 				toList[edgesCount] = toIndex;
@@ -847,11 +849,11 @@ CVNetworkRef CVNewWaxmanNetwork(CVSize verticesCount,CVFloat alpha, CVFloat beta
 
 CVNetworkRef CVNewRandomGeographicNetwork(CVSize verticesCount, CVFloat maximumDistance, CVSize dimension){
 	CVSize edgesCapacity = verticesCount*3;
-	CVIndex* fromList = calloc(edgesCapacity, sizeof(CVIndex));
-	CVIndex* toList = calloc(edgesCapacity, sizeof(CVIndex));
+	CVIndex* fromList = (unsigned int *)calloc(edgesCapacity, sizeof(CVIndex));
+	CVIndex* toList = (unsigned int *)calloc(edgesCapacity, sizeof(CVIndex));
 	CVSize edgesCount = 0;
-	CVFloat* positions = calloc(verticesCount*dimension, sizeof(CVFloat));
-	CVFloat* positions3D = calloc(verticesCount*3, sizeof(CVFloat));
+	CVFloat* positions = (float *)calloc(verticesCount*dimension, sizeof(CVFloat));
+	CVFloat* positions3D = (float *)calloc(verticesCount*3, sizeof(CVFloat));
 	
 	CVIndex vertexIndex;
 	for (vertexIndex=0; vertexIndex<verticesCount; vertexIndex++) {
@@ -877,8 +879,8 @@ CVNetworkRef CVNewRandomGeographicNetwork(CVSize verticesCount, CVFloat maximumD
 			if (sqrt(distanceSquared)<maximumDistance){
 				if(edgesCapacity<edgesCount+1){
 					edgesCapacity = CVCapacityGrow(edgesCount+1);
-					fromList = realloc(fromList, sizeof(CVIndex)*edgesCapacity);
-					toList = realloc(toList, sizeof(CVIndex)*edgesCapacity);
+					fromList = (unsigned int *)realloc(fromList, sizeof(CVIndex)*edgesCapacity);
+					toList = (unsigned int *)realloc(toList, sizeof(CVIndex)*edgesCapacity);
 				}
 				fromList[edgesCount] = fromIndex;
 				toList[edgesCount] = toIndex;
@@ -901,11 +903,11 @@ CVNetworkRef CVNewRandomGeographicNetwork(CVSize verticesCount, CVFloat maximumD
 
 CVNetworkRef CVNewRandomProbabilisticGeographicNetwork(CVSize verticesCount,CVFloat connectionProbability, CVFloat maximumDistance, CVSize dimension){
 	CVSize edgesCapacity = verticesCount*3;
-	CVIndex* fromList = calloc(edgesCapacity, sizeof(CVIndex));
-	CVIndex* toList = calloc(edgesCapacity, sizeof(CVIndex));
+	CVIndex* fromList = (unsigned int *)calloc(edgesCapacity, sizeof(CVIndex));
+	CVIndex* toList = (unsigned int *)calloc(edgesCapacity, sizeof(CVIndex));
 	CVSize edgesCount = 0;
-	CVFloat* positions = calloc(verticesCount*dimension, sizeof(CVFloat));
-	CVFloat* positions3D = calloc(verticesCount*3, sizeof(CVFloat));
+	CVFloat* positions = (float *)calloc(verticesCount*dimension, sizeof(CVFloat));
+	CVFloat* positions3D = (float *)calloc(verticesCount*3, sizeof(CVFloat));
 	
 	CVIndex vertexIndex;
 	for (vertexIndex=0; vertexIndex<verticesCount; vertexIndex++) {
@@ -931,8 +933,8 @@ CVNetworkRef CVNewRandomProbabilisticGeographicNetwork(CVSize verticesCount,CVFl
 			if (sqrt(distanceSquared)<maximumDistance && CVRandomFloat()<=connectionProbability){
 				if(edgesCapacity<edgesCount+1){
 					edgesCapacity = CVCapacityGrow(edgesCount+1);
-					fromList = realloc(fromList, sizeof(CVIndex)*edgesCapacity);
-					toList = realloc(toList, sizeof(CVIndex)*edgesCapacity);
+					fromList = (unsigned int *)realloc(fromList, sizeof(CVIndex)*edgesCapacity);
+					toList = (unsigned int *)realloc(toList, sizeof(CVIndex)*edgesCapacity);
 				}
 				fromList[edgesCount] = fromIndex;
 				toList[edgesCount] = toIndex;
@@ -969,7 +971,7 @@ CVNetworkRef CVNewNetworkFromRandomRewiringEdgeList(CVIndex* fromList,CVIndex* t
 	//	HASH_ADD_KEYPTR(hh, edgesHash, edgesHash->edge, sizeof(struct __cv_edge), edgesHash);
 	
 	for (edgeIndex=0; edgeIndex<edgesCount; edgeIndex++) {
-		struct __cv_edge_element* edgeElement = calloc(1, sizeof(struct __cv_edge_element));
+		struct __cv_edge_element* edgeElement = (struct __cv_edge_element *) calloc(1, sizeof(struct __cv_edge_element));
 		if(!directed){
 			edgeElement->edge.from = CVMIN(fromList[edgeIndex],toList[edgeIndex]);
 			edgeElement->edge.to = CVMAX(fromList[edgeIndex],toList[edgeIndex]);
@@ -1034,8 +1036,8 @@ CVNetworkRef CVNewNetworkFromRandomRemovingEdgeList(CVIndex* fromList,CVIndex* t
 }
 
 CVNetworkRef CVNewNetworkFromRandomRemoving(const CVNetworkRef originalNetwork, CVFloat removingProbability){
-	CVIndex* fromList = calloc(originalNetwork->edgesCount, sizeof(CVIndex));
-	CVIndex* toList = calloc(originalNetwork->edgesCount, sizeof(CVIndex));
+	CVIndex* fromList = (unsigned int *)calloc(originalNetwork->edgesCount, sizeof(CVIndex));
+	CVIndex* toList = (unsigned int *)calloc(originalNetwork->edgesCount, sizeof(CVIndex));
 	
 	memcpy(fromList, originalNetwork->edgeFromList, sizeof(CVSize)*originalNetwork->edgesCount);
 	memcpy(toList, originalNetwork->edgeToList, sizeof(CVSize)*originalNetwork->edgesCount);
@@ -1068,7 +1070,7 @@ CVNetworkRef CVNewNetworkFromRectangleRemovingEdgeList(CVIndex* fromList,CVIndex
 		positionYMax = CVMAX(positionYMax, y);
 		positionYMin = CVMIN(positionYMin, y);
 	}
-	CVFloat* rectangles = calloc(rectangleCount*4, sizeof(CVFloat));
+	CVFloat* rectangles = (float *)calloc(rectangleCount*4, sizeof(CVFloat));
 	
 	for (i=0; i<rectangleCount; i++) {
 		CVFloat cx = positionXMin + CVRandomFloat()*(positionXMax-positionXMin);
@@ -1084,7 +1086,7 @@ CVNetworkRef CVNewNetworkFromRectangleRemovingEdgeList(CVIndex* fromList,CVIndex
 		printf("xy = (%f, %f)    rect = [%f, %f, %f, %f]\n",0.1,1.2,cx-sizex*0.5f,cy-sizey*0.5f,cx+sizex*0.5f,cy+sizey*0.5f);
 	}
 	
-	double* probabilityVertices = calloc(verticesCount,sizeof(double));
+	double* probabilityVertices = (double *)calloc(verticesCount,sizeof(double));
 	CVIndex j;
 	for (j=0; j<verticesCount; j++) {
 		probabilityVertices[j] = 1.0;
@@ -1125,10 +1127,10 @@ CVNetworkRef CVNewNetworkFromRectangleRemoving(const CVNetworkRef originalNetwor
 	CVNetworkRef theNetwork;
 	CVFloat* positions = NULL;
 	CVPropertyType positionType = CVUnknownPropertyType;
-	positions = CVNetworkPropertyWithName(originalNetwork, "Position", &positionType);
+	positions = (float *)CVNetworkPropertyWithName(originalNetwork, "Position", &positionType);
 	if(positions && positionType==CVVector3DPropertyType){
-		CVIndex* fromList = calloc(originalNetwork->edgesCount, sizeof(CVIndex));
-		CVIndex* toList = calloc(originalNetwork->edgesCount, sizeof(CVIndex));
+		CVIndex* fromList = (unsigned int *)calloc(originalNetwork->edgesCount, sizeof(CVIndex));
+		CVIndex* toList = (unsigned int *)calloc(originalNetwork->edgesCount, sizeof(CVIndex));
 		memcpy(fromList, originalNetwork->edgeFromList, sizeof(CVSize)*originalNetwork->edgesCount);
 		memcpy(toList, originalNetwork->edgeToList, sizeof(CVSize)*originalNetwork->edgesCount);
 		theNetwork = CVNewNetworkFromRectangleRemovingEdgeList(fromList, toList, originalNetwork->edgesCount, originalNetwork->verticesCount, originalNetwork->directed, positions,minRectangleSize,maxRectangleSize,rectangleCount, removeProbability);
@@ -1144,8 +1146,8 @@ CVNetworkRef CVNewNetworkFromRectangleRemoving(const CVNetworkRef originalNetwor
 
 
 CVNetworkRef CVNewNetworkFromRandomRewiring(const CVNetworkRef originalNetwork, CVFloat rewiringProbability){
-	CVIndex* fromList = calloc(originalNetwork->edgesCount, sizeof(CVIndex));
-	CVIndex* toList = calloc(originalNetwork->edgesCount, sizeof(CVIndex));
+	CVIndex* fromList = (unsigned int *)calloc(originalNetwork->edgesCount, sizeof(CVIndex));
+	CVIndex* toList = (unsigned int *)calloc(originalNetwork->edgesCount, sizeof(CVIndex));
 	
 	memcpy(fromList, originalNetwork->edgeFromList, sizeof(CVSize)*originalNetwork->edgesCount);
 	memcpy(toList, originalNetwork->edgeToList, sizeof(CVSize)*originalNetwork->edgesCount);
@@ -1159,8 +1161,8 @@ CVNetworkRef CVNewNetworkFromRandomRewiring(const CVNetworkRef originalNetwork, 
 
 
 CVNetworkRef CVNewNetworkFromModularRandomRewiring(const CVNetworkRef originalNetwork, CVIntegerArray modules, CVFloat rewiringProbability){
-	CVIndex* fromList = calloc(originalNetwork->edgesCount, sizeof(CVIndex));
-	CVIndex* toList = calloc(originalNetwork->edgesCount, sizeof(CVIndex));
+	CVIndex* fromList = (unsigned int *)calloc(originalNetwork->edgesCount, sizeof(CVIndex));
+	CVIndex* toList = (unsigned int *)calloc(originalNetwork->edgesCount, sizeof(CVIndex));
 	
 	memcpy(fromList, originalNetwork->edgeFromList, sizeof(CVSize)*originalNetwork->edgesCount);
 	memcpy(toList, originalNetwork->edgeToList, sizeof(CVSize)*originalNetwork->edgesCount);
@@ -1191,13 +1193,13 @@ CVNetworkRef CVNewNetworkFromModularRandomRewiring(const CVNetworkRef originalNe
 
 CVNetworkRef CVNewBarabasiAlbertNetwork(CVSize initialSize, CVSize degreeGrowth, CVSize iterations){
 	CVSize edgesCount = iterations*degreeGrowth;
-	CVIndex* fromList = calloc(edgesCount, sizeof(CVIndex));
-	CVIndex* toList = calloc(edgesCount, sizeof(CVIndex));
+	CVIndex* fromList = (unsigned int *)calloc(edgesCount, sizeof(CVIndex));
+	CVIndex* toList = (unsigned int *)calloc(edgesCount, sizeof(CVIndex));
 	CVSize verticesCount = iterations+initialSize;
 	CVIndex currentLink=0;
 	CVIndex currentVertex;
 	
-	CVSize* distribGenerator = calloc(initialSize+(degreeGrowth*2)*iterations, sizeof(CVSize));
+	CVSize* distribGenerator = (unsigned int *)calloc(initialSize+(degreeGrowth*2)*iterations, sizeof(CVSize));
 	CVIndex distribPointer=0;
 	CVIndex i;
 	for(i=0;i<initialSize;i++){
@@ -1245,13 +1247,13 @@ CVNetworkRef CVNewBarabasiAlbertNetwork(CVSize initialSize, CVSize degreeGrowth,
 
 CVNetworkRef* CVNewBarabasiAlbertNetworkOverTime(CVSize initialSize, CVSize degreeGrowth, CVSize* iterationsArray, CVSize iterationsCount){
 	CVSize edgesCount = iterationsArray[iterationsCount-1]*degreeGrowth;
-	CVIndex* fromList = calloc(edgesCount, sizeof(CVIndex));
-	CVIndex* toList = calloc(edgesCount, sizeof(CVIndex));
+	CVIndex* fromList = (unsigned int *)calloc(edgesCount, sizeof(CVIndex));
+	CVIndex* toList = (unsigned int *)calloc(edgesCount, sizeof(CVIndex));
 	CVSize verticesCount = iterationsArray[iterationsCount-1]+initialSize;
 	CVIndex currentLink=0;
 	CVIndex currentVertex;
-	CVNetworkRef* networks = calloc(iterationsCount, sizeof(CVNetworkRef));
-	CVSize* distribGenerator = calloc(initialSize+(degreeGrowth*2)*iterationsArray[iterationsCount-1], sizeof(CVSize));
+	CVNetworkRef* networks = (CVNetwork **)calloc(iterationsCount, sizeof(CVNetworkRef));
+	CVSize* distribGenerator = (unsigned int *)calloc(initialSize+(degreeGrowth*2)*iterationsArray[iterationsCount-1], sizeof(CVSize));
 	CVIndex distribPointer=0;
 	CVIndex i;
 	for(i=0;i<initialSize;i++){
@@ -1478,7 +1480,7 @@ void CVNetworkWriteToGMLFile(CVNetworkRef theNetwork, FILE* networkFile){
 	for(i=0;i<theNetwork->verticesCount;i++){
 		fprintf(networkFile,"  node [\n");
 		
-		fprintf(networkFile,"    id %"CVIndexScan"\n",i);
+		fprintf(networkFile,"    id %CVIndexScan\n",i);
 		if(theNetwork->vertexNames){
 			fprintf(networkFile,"    label \"%s\"\n",theNetwork->vertexNames[i]);
 		}
@@ -1490,7 +1492,7 @@ void CVNetworkWriteToGMLFile(CVNetworkRef theNetwork, FILE* networkFile){
 			CVString name = theNetwork->propertiesNames[propertyIndex];
 			switch (type) {
 				case CVNumberPropertyType:{
-					CVFloat* floatData = data;
+					CVFloat* floatData = (float *) data;
 					fprintf(networkFile,"    ");
 					CVBool nextUpper = CVFalse;
 					while (*name) {
@@ -1503,11 +1505,11 @@ void CVNetworkWriteToGMLFile(CVNetworkRef theNetwork, FILE* networkFile){
 						name++;
 					}
 					fprintf(networkFile," ");
-					fprintf(networkFile,"%"CVFloatScan"\n",floatData[i]);
+					fprintf(networkFile,"%CVFloatScan\n",floatData[i]);
 					break;
 				}
 				case CVStringPropertyType:{
-					CVString* stringData = data;
+					CVString* stringData = (char **)data;
 					fprintf(networkFile,"    ");
 					CVBool nextUpper = CVFalse;
 					while (*name) {
@@ -1524,7 +1526,7 @@ void CVNetworkWriteToGMLFile(CVNetworkRef theNetwork, FILE* networkFile){
 					break;
 				}
 				case CVVector2DPropertyType:{
-					CVFloat* floatData = data;
+					CVFloat* floatData = (float * )data;
 					fprintf(networkFile,"    ");
 					CVBool nextUpper = CVFalse;
 					while (*name) {
@@ -1537,11 +1539,11 @@ void CVNetworkWriteToGMLFile(CVNetworkRef theNetwork, FILE* networkFile){
 						name++;
 					}
 					fprintf(networkFile," ");
-					fprintf(networkFile,"[ x %"CVFloatScan" y %"CVFloatScan" ]\n",floatData[i*2],floatData[i*2+1]);
+					fprintf(networkFile,"[ x %CVFloatScan y %CVFloatScan ]\n",floatData[i*2],floatData[i*2+1]);
 					break;
 				}
 				case CVVector3DPropertyType:{
-					CVFloat* floatData = data;
+					CVFloat* floatData = (float *)data;
 					if(strcmp(name, "Position")==0 || strcmp(name, "position")==0 ){
 						fprintf(networkFile,"    graphics");
 					}else{
@@ -1558,7 +1560,7 @@ void CVNetworkWriteToGMLFile(CVNetworkRef theNetwork, FILE* networkFile){
 						}
 					}
 					fprintf(networkFile," ");
-					fprintf(networkFile,"[ x %"CVFloatScan" y %"CVFloatScan" z %"CVFloatScan" ]\n",floatData[i*3],floatData[i*3+1],floatData[i*3+2]);
+					fprintf(networkFile,"[ x %CVFloatScan y %CVFloatScan z %CVFloatScan ]\n",floatData[i*3],floatData[i*3+1],floatData[i*3+2]);
 					break;
 				}
 				default:{
@@ -1579,9 +1581,9 @@ void CVNetworkWriteToGMLFile(CVNetworkRef theNetwork, FILE* networkFile){
 		CVIndex toVertex = edgesTo[edgeIndex];
 		if(theNetwork->edgeWeighted){
 			CVFloat weight = edgesWeights[edgeIndex];
-			fprintf(networkFile,"    source %"CVIndexScan"\n    target %"CVIndexScan" \n    weight %"CVFloatScan"\n",fromVertex,toVertex,weight);
+			fprintf(networkFile,"    source %CVIndexScan\n    target %CVIndexScan \n    weight %CVFloatScan\n",fromVertex,toVertex,weight);
 		}else{
-			fprintf(networkFile,"    source %"CVIndexScan"\n    target %"CVIndexScan"\n",fromVertex,toVertex);
+			fprintf(networkFile,"    source %CVIndexScan\n    target %CVIndexScan\n",fromVertex,toVertex);
 		}
 		fprintf(networkFile,"  ]\n");
 	}
@@ -1620,14 +1622,14 @@ CVFloat CVNetworkClusteringCoefficient(const CVNetworkRef aNetwork, CVIndex node
 
 
 CVNetworkRef CVNewNetworkHomogeneusModel(CVSize verticesCount,CVSize degree){
-	
-	CVIndex try = 0;
+	// expected unqualified-id before numeric constant
+	CVIndex try_ = 0;
 	CVSize maxTries = 1000;
 	CVSize remaining = 0;
 	CVNetworkRef network = NULL;
 	CVSize originalVerticesCount = verticesCount;
-	for (try=0; try<maxTries; try++) {
-		verticesCount = originalVerticesCount+(try/20);
+	for (try_=0; try_<maxTries; try_++) {
+		verticesCount = originalVerticesCount+(try_/20);
 		CVSize i;
 		network = CVNewNetwork(verticesCount, CVFalse, CVFalse);
 
@@ -1700,7 +1702,7 @@ CVNetworkRef CVNewNetworkHomogeneusModel(CVSize verticesCount,CVSize degree){
 				}
 				
 				
-				struct __cv_edge_element* edgeElement = calloc(1, sizeof(struct __cv_edge_element));
+				struct __cv_edge_element* edgeElement = (struct __cv_edge_element*)calloc(1, sizeof(struct __cv_edge_element));
 				
 				edgeElement->edge.from = CVMIN(i, choice);
 				edgeElement->edge.to = CVMAX(i, choice);
@@ -1744,7 +1746,7 @@ CVNetworkRef CVNewNetworkHomogeneusModel(CVSize verticesCount,CVSize degree){
 			}
 		}
 		remaining=enabledVertices.count;
-		printf("Remaining\t%"CVUIntegerScan"\n",enabledVertices.count);
+		printf("Remaining\t%CVUIntegerScan\n",enabledVertices.count);
 
 		struct __cv_edge_element* edgeElement, *tempElement;
 
@@ -1806,7 +1808,7 @@ CVNetworkRef CVNewNetworkRemoveChains(CVIndex* fromList,CVIndex* toList, CVSize 
 		positionYMax = CVMAX(positionYMax, y);
 		positionYMin = CVMIN(positionYMin, y);
 	}
-	CVFloat* rectangles = calloc(rectangleCount*4, sizeof(CVFloat));
+	CVFloat* rectangles = (float *)calloc(rectangleCount*4, sizeof(CVFloat));
 	
 	for (i=0; i<rectangleCount; i++) {
 		CVFloat cx = positionXMin + CVRandomFloat()*(positionXMax-positionXMin);
@@ -1822,7 +1824,7 @@ CVNetworkRef CVNewNetworkRemoveChains(CVIndex* fromList,CVIndex* toList, CVSize 
 		//printf("xy = (%f, %f)    rect = [%f, %f, %f, %f]\n",0.1,1.2,cx-sizex*0.5f,cy-sizey*0.5f,cx+sizex*0.5f,cy+sizey*0.5f);
 	}
 	
-	double* probabilityVertices = calloc(verticesCount,sizeof(double));
+	double* probabilityVertices = (double *)calloc(verticesCount,sizeof(double));
 	CVIndex j;
 	for (j=0; j<verticesCount; j++) {
 		probabilityVertices[j] = 1.0;
@@ -1864,10 +1866,10 @@ CVNetworkRef CVNewNetworkRemovingChains(const CVNetworkRef originalNetwork){
 	CVSize verticesCount = originalNetwork->verticesCount;
 	CVSize edgesCount = originalNetwork->edgesCount;
 	CVPropertyType positionType = CVUnknownPropertyType;
-	positions = CVNetworkPropertyWithName(originalNetwork, "Position", &positionType);
+	positions = (float *)CVNetworkPropertyWithName(originalNetwork, "Position", &positionType);
 	
-	CVIndex* fromList = calloc(originalNetwork->edgesCount, sizeof(CVIndex));
-	CVIndex* toList = calloc(originalNetwork->edgesCount, sizeof(CVIndex));
+	CVIndex* fromList = (unsigned int *)calloc(originalNetwork->edgesCount, sizeof(CVIndex));
+	CVIndex* toList = (unsigned int *)calloc(originalNetwork->edgesCount, sizeof(CVIndex));
 	
 	CVSize chains = 0;
 	CVBitArray removedEdges = CVNewBitArray(edgesCount);
@@ -1925,7 +1927,7 @@ CVNetworkRef CVNewNetworkRemovingChains(const CVNetworkRef originalNetwork){
 		theNetwork = CVNewNetwork(verticesCount, CVFalse, originalNetwork->directed);
 		CVNetworkAddNewEdges(theNetwork, fromList, toList, NULL, newEdgesCount);
 		edgesCount = theNetwork->edgesCount;
-		printf("chains:%"CVSizeScan"\n",chains);
+		printf("chains:%CVSizeScan\n",chains);
 	}while(chains>0);
 	
 	if(positions && positionType==CVVector3DPropertyType && theNetwork){
@@ -2055,13 +2057,13 @@ CVSize CVNetworkNumberOfConnectedComponents(const CVNetworkRef theNetwork, CVGen
 		connectedComponents->count = 0;
 	
 		
-		CVFloatArray* subVerticesLists = calloc(numGroups, sizeof(CVFloatArray));
-		CVUIntegerArray* subEdgesFrom = calloc(numGroups, sizeof(CVUIntegerArray));
-		CVUIntegerArray* subEdgesTo = calloc(numGroups, sizeof(CVUIntegerArray));
+		CVFloatArray* subVerticesLists = (CVFloatArray *)calloc(numGroups, sizeof(CVFloatArray));
+		CVUIntegerArray* subEdgesFrom = (CVUIntegerArray *)calloc(numGroups, sizeof(CVUIntegerArray));
+		CVUIntegerArray* subEdgesTo = (CVUIntegerArray *)calloc(numGroups, sizeof(CVUIntegerArray));
 		CVFloatArray* subEdgesWeight = NULL;
 		
 		if(theNetwork->edgeWeighted){
-			subEdgesWeight = calloc(numGroups, sizeof(CVFloatArray));
+			subEdgesWeight = (CVFloatArray *)calloc(numGroups, sizeof(CVFloatArray));
 		}
 		
 		CVUIntegerArray newVerticesIndices;
@@ -2199,8 +2201,8 @@ CVNetworkRef CVNewSubNetworkFromNetwork(const CVNetworkRef theNetwork, const CVU
 	CVNetworkAppendProperty(groupNetwork, "Original Index", CVNumberPropertyType, largestVerticesList.data);
 	
 	if(theNetwork->vertexNames){
-		CVString* names = calloc(groupVerticesCount, sizeof(CVString));
-		CVString* propertyData = theNetwork->vertexNames;
+		CVString* names = (char **)calloc(groupVerticesCount, sizeof(CVString));
+		CVString* propertyData = (char **)theNetwork->vertexNames;
 		for (i=0; i<groupVerticesCount; i++) {
 			names[i] = propertyData[verticesIndices.data[i]];
 		}
@@ -2216,8 +2218,8 @@ CVNetworkRef CVNewSubNetworkFromNetwork(const CVNetworkRef theNetwork, const CVU
 		CVIndex i;
 		switch (propertyType) {
 			case CVStringPropertyType:{
-				CVString* values = calloc(groupVerticesCount, sizeof(CVString));
-				CVString* propertyData = theNetwork->propertiesData[propIndex];
+				CVString* values = (char **)calloc(groupVerticesCount, sizeof(CVString));
+				CVString* propertyData = (char **)theNetwork->propertiesData[propIndex];
 				for (i=0; i<groupVerticesCount; i++) {
 					values[i] = propertyData[verticesIndices.data[i]];
 				}
@@ -2226,8 +2228,8 @@ CVNetworkRef CVNewSubNetworkFromNetwork(const CVNetworkRef theNetwork, const CVU
 				break;
 			}
 			case CVNumberPropertyType:{
-				CVFloat* values = calloc(groupVerticesCount, sizeof(CVFloat));
-				CVFloat* propertyData = theNetwork->propertiesData[propIndex];
+				CVFloat* values = (float *)calloc(groupVerticesCount, sizeof(CVFloat));
+				CVFloat* propertyData = (float *)theNetwork->propertiesData[propIndex];
 				for (i=0; i<groupVerticesCount; i++) {
 					values[i] = propertyData[verticesIndices.data[i]];
 				}
@@ -2236,8 +2238,8 @@ CVNetworkRef CVNewSubNetworkFromNetwork(const CVNetworkRef theNetwork, const CVU
 				break;
 			}
 			case CVVector2DPropertyType:{
-				CVFloat* values = calloc(groupVerticesCount*2, sizeof(CVFloat));
-				CVFloat* propertyData = theNetwork->propertiesData[propIndex];
+				CVFloat* values = (float *)calloc(groupVerticesCount*2, sizeof(CVFloat));
+				CVFloat* propertyData = (float *)theNetwork->propertiesData[propIndex];
 				for (i=0; i<groupVerticesCount; i++) {
 					values[i*2] = propertyData[verticesIndices.data[i]*2];
 					values[i*2+1] = propertyData[verticesIndices.data[i]*2+1];
@@ -2247,8 +2249,8 @@ CVNetworkRef CVNewSubNetworkFromNetwork(const CVNetworkRef theNetwork, const CVU
 				break;
 			}
 			case CVVector3DPropertyType:{
-				CVFloat* values = calloc(groupVerticesCount*3, sizeof(CVFloat));
-				CVFloat* propertyData = theNetwork->propertiesData[propIndex];
+				CVFloat* values = (float *)calloc(groupVerticesCount*3, sizeof(CVFloat));
+				CVFloat* propertyData = (float *)theNetwork->propertiesData[propIndex];
 				for (i=0; i<groupVerticesCount; i++) {
 					CVIndex selectedIndex = verticesIndices.data[i];
 					values[i*3] = propertyData[selectedIndex*3];
@@ -2460,8 +2462,8 @@ CVNetworkRef CVNewNetworkFromLargestComponent(const CVNetworkRef theNetwork){
 	CVNetworkAppendProperty(groupNetwork, "Original Index", CVNumberPropertyType, largestVerticesList.data);
 	
 	if(theNetwork->vertexNames){
-		CVString* names = calloc(groupVerticesCount, sizeof(CVString));
-		CVString* propertyData = theNetwork->vertexNames;
+		CVString* names = (char **)calloc(groupVerticesCount, sizeof(CVString));
+		CVString* propertyData = (char **)theNetwork->vertexNames;
 		for (i=0; i<groupVerticesCount; i++) {
 			names[i] = propertyData[verticesIndices.data[i]];
 		}
@@ -2477,8 +2479,8 @@ CVNetworkRef CVNewNetworkFromLargestComponent(const CVNetworkRef theNetwork){
 		CVIndex i;
 		switch (propertyType) {
 			case CVStringPropertyType:{
-				CVString* values = calloc(groupVerticesCount, sizeof(CVString));
-				CVString* propertyData = theNetwork->propertiesData[propIndex];
+				CVString* values = (char **)calloc(groupVerticesCount, sizeof(CVString));
+				CVString* propertyData = (char **)theNetwork->propertiesData[propIndex];
 				for (i=0; i<groupVerticesCount; i++) {
 					values[i] = propertyData[verticesIndices.data[i]];
 				}
@@ -2487,8 +2489,8 @@ CVNetworkRef CVNewNetworkFromLargestComponent(const CVNetworkRef theNetwork){
 				break;
 			}
 			case CVNumberPropertyType:{
-				CVFloat* values = calloc(groupVerticesCount, sizeof(CVFloat));
-				CVFloat* propertyData = theNetwork->propertiesData[propIndex];
+				CVFloat* values = (float *)calloc(groupVerticesCount, sizeof(CVFloat));
+				CVFloat* propertyData = (float *)theNetwork->propertiesData[propIndex];
 				for (i=0; i<groupVerticesCount; i++) {
 					values[i] = propertyData[verticesIndices.data[i]];
 				}
@@ -2497,8 +2499,8 @@ CVNetworkRef CVNewNetworkFromLargestComponent(const CVNetworkRef theNetwork){
 				break;
 			}
 			case CVVector2DPropertyType:{
-				CVFloat* values = calloc(groupVerticesCount*2, sizeof(CVFloat));
-				CVFloat* propertyData = theNetwork->propertiesData[propIndex];
+				CVFloat* values = (float *)calloc(groupVerticesCount*2, sizeof(CVFloat));
+				CVFloat* propertyData = (float *)theNetwork->propertiesData[propIndex];
 				for (i=0; i<groupVerticesCount*2; i+=2) {
 					values[i] = propertyData[verticesIndices.data[i]*2];
 					values[i+1] = propertyData[verticesIndices.data[i]*2+1];
@@ -2508,8 +2510,8 @@ CVNetworkRef CVNewNetworkFromLargestComponent(const CVNetworkRef theNetwork){
 				break;
 			}
 			case CVVector3DPropertyType:{
-				CVFloat* values = calloc(groupVerticesCount*3, sizeof(CVFloat));
-				CVFloat* propertyData = theNetwork->propertiesData[propIndex];
+				CVFloat* values = (float *)calloc(groupVerticesCount*3, sizeof(CVFloat));
+				CVFloat* propertyData = (float *)theNetwork->propertiesData[propIndex];
 				for (i=0; i<groupVerticesCount*3; i+=3) {
 					values[i] = propertyData[verticesIndices.data[i]*3];
 					values[i+1] = propertyData[verticesIndices.data[i]*3+1];
@@ -2710,8 +2712,8 @@ CVSize CVNetworkLargestComponentSize(const CVNetworkRef theNetwork, CVSize* conn
 
 CVNetworkRef CVNewNetworkFromAdjacencyMatrix(const CVBitArray adjacencyMatrix, CVSize verticesCount, CVBool directed){
 	CVSize edgesCapacity = 2;
-	CVIndex* fromList = calloc(edgesCapacity, sizeof(CVIndex));
-	CVIndex* toList = calloc(edgesCapacity, sizeof(CVIndex));
+	CVIndex* fromList = (unsigned int *)calloc(edgesCapacity, sizeof(CVIndex));
+	CVIndex* toList = (unsigned int *)calloc(edgesCapacity, sizeof(CVIndex));
 	CVSize edgesCount = 0;
 	
 	for (CVIndex fromIndex=0; fromIndex<verticesCount; fromIndex++) {
@@ -2720,8 +2722,8 @@ CVNetworkRef CVNewNetworkFromAdjacencyMatrix(const CVBitArray adjacencyMatrix, C
 			if(CVBitArrayTest(adjacencyMatrix, fromIndex*verticesCount+toIndex)){
 				if(edgesCapacity<edgesCount+1){
 					edgesCapacity = CVCapacityGrow(edgesCount+1);
-					fromList = realloc(fromList, sizeof(CVIndex)*edgesCapacity);
-					toList = realloc(toList, sizeof(CVIndex)*edgesCapacity);
+					fromList = (unsigned int *)realloc(fromList, sizeof(CVIndex)*edgesCapacity);
+					toList = (unsigned int *)realloc(toList, sizeof(CVIndex)*edgesCapacity);
 				}
 				fromList[edgesCount] = fromIndex;
 				toList[edgesCount] = toIndex;
